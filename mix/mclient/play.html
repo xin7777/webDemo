@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+<title>Play</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="" />
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js" >
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- font files  -->
+<link href='http://fonts.useso.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+<link href='http://fonts.useso.com/css?family=Nunito:400,300,700' rel='stylesheet' type='text/css'>
+<!-- /font files  -->
+<!-- css files -->
+<link href="css/style.css" rel='stylesheet' type='text/css' media="all" />
+<!-- /css files -->
+</head>
+<body>
+<h1>多模网络标识视频客户端</h1>
+<div class="log">
+	<div class="content2">
+		<h2>播放视频</h2>
+		<form onsubmit="play() ; return false ;" >
+			<input type="text" name="userid" id="input_id1" value="视频标识"  placeholder="视频标识" >
+			<input type="submit" class="register" value="查询" >
+		</form>
+	</div>
+	<div class="clear"></div>
+</div>
+<div class="footer">
+	<!--<p>Copyright &copy; 2019.pkusz.<a target="_blank" href="" ></a></p>-->
+	<p>链接：<a target="_blank" href="./register.html" >注册-</a><a target="_blank" href="./play.html" >播放-</a><a target="_blank" href="./create_url.html" >发布-</a><a target="_blank" href="./getuserdata.html" >查询</a></p>
+</div>
+<script language="javascript" >
+
+function ndn_ndn(source_url){
+	//alert("ndn-ndn");
+	$.post("ndn_ndn.php",{
+		url: source_url 
+	},
+	function(data,status){
+		if(data == 0 ){
+			alert("传输启动成功");
+		}else{
+			alert("传输启动失败");
+		}
+	});
+}
+function ip_ndn(source_url){
+	//alert("ndn-ndn");
+	$.post("ip_ndn.php",{
+		url: source_url 
+	},
+	function(data,status){
+		if(data == 0 ){
+			alert("传输启动成功");
+		}else{
+			alert("传输启动失败");
+		}
+	});
+}
+function ndn_ip(source_url){
+	//alert("ndn-ip");
+	$.post("ndn_ip.php",{
+		url: source_url 
+	},
+	function(data,status){
+		if(data == 0 ){
+			alert("传输启动成功");
+		}else{
+			alert("传输启动失败");
+		}
+	});
+}
+
+function play(){
+	var input_1 = $("#input_id1").val();
+	console.log("========================" + input_1 + "\n");
+	$.post("play.php",{
+		input1: input_1
+	},
+	function(data,status){
+		//window.location.href="http://localhost/002.mp4";
+		//alert(data);
+		if(data == -1){
+			//alert("找不到该资源");
+		}else{
+			//window.location.href=data;
+			var mark = data.substr(0,2);
+			var source_url = data.substr(4,data.length-4);
+			if(mark == "ip")
+			{
+				mark = data.substr(2,2);
+				if(mark == "ip"){
+					var msg = "本主机处于IP网络\n" + "查询标识结果为 : "+source_url+"\n" + "资源处于IP网络中\n"+"将为您进行隧道传输\n";
+					alert(msg);
+					source_url = "http://"+source_url;
+					window.location.href= source_url;
+				}else{
+					var msg = "本主机处于IP网络\n" + "查询标识结果为 : "+source_url+"\n" + "资源处于NDN网络中\n"+"将为您进行跨异构网络传输\n";
+					alert(msg);
+					ip_ndn(source_url);
+				}
+			}
+			else if(mark == "nd")
+			{
+				mark = data.substr(2,2);
+				if(mark == "nd"){
+					var msg = "本主机处于NDN网络\n" + "查询标识结果为 : "+source_url+"\n" + "资源处于NDN网络中\n"+"将为您进行NDN传输\n";
+					alert(msg);
+					ndn_ndn(source_url);
+				}else{
+					var msg = "本主机处于NDN网络\n" + "查询标识结果为 : "+source_url+"\n" + "资源处于IP网络中\n"+"将为您进行跨异构网络传输\n";
+					alert(msg);
+					ndn_ip(source_url) ;
+				}
+			}else{
+				alert(data);
+			}
+		}
+	
+	});
+}
+
+</script>
+
+</body>
+</html>
